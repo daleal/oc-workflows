@@ -13,20 +13,36 @@ type ConfigWithSkills = {
 
 const plugin: PluginModule & { id: string } = {
   id: 'daleal.workflows',
-  server: async () => ({
-    config(config) {
-      const configured = config as typeof config & ConfigWithSkills;
-      const paths = configured.skills?.paths ?? [];
-      configured.skills = {
-        ...configured.skills,
-        paths: paths.includes(skillRoot) ? paths : [...paths, skillRoot],
-      };
-      return Promise.resolve();
-    },
-    tool: {
-      'run-workflow': runWorkflow,
-    },
-  }),
+  server: async ({ client }) => {
+    return {
+      config(config) {
+        const configured = config as typeof config & ConfigWithSkills;
+        const paths = configured.skills?.paths ?? [];
+        configured.skills = {
+          ...configured.skills,
+          paths: paths.includes(skillRoot) ? paths : [...paths, skillRoot],
+        };
+        configured.agent = {
+          ...configured.agent,
+          workflow: {
+            mode: 'subagent',
+            hidden: true,
+            description: 'Runs a generated TypeScript workflow through the run-workflow tool',
+            prompt:
+              'Immediately call run-workflow exactly once with the workflow path from the request. Do not inspect files, plan, explain, or perform any other work. Immediately return the tool result exactly as-is.',
+            permission: {
+              '*': 'deny',
+              'run-workflow': 'allow',
+            } as Record<string, 'allow' | 'deny'>,
+          },
+        };
+        return Promise.resolve();
+      },
+      tool: {
+        'run-workflow': runWorkflow(client),
+      },
+    };
+  },
 };
 
 export default plugin;

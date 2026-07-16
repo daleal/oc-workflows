@@ -1,6 +1,6 @@
 ---
 name: workflows
-description: Use to generate agentic workflows to run sub-agents, deterministic loops or complex flows. Useful when a task is too big to be solved by just one agent, and will benefit from having a structured step-by-step approach. This skill is designed to help you break down complex tasks into manageable steps.
+description: Use to generate/run agentic workflows to run sub-agents, deterministic loops or complex flows. Useful when a task is too big to be solved by just one agent, and will benefit from having a structured step-by-step approach. This skill is designed to help you break down complex tasks into manageable steps. Must ALWAYS be read before generating or running a workflow.
 ---
 
 # Workflows
@@ -36,7 +36,7 @@ Import the shared helpers from the correct relative path, typically `../utils.js
 ## Implementation
 
 - Orchestrate agents through the OpenCode SDK client provided by `workflow`; do not use another agent framework or SDK.
-- Export the workflow entrypoint as the module's default function. It must accept a `WorkflowRuntime`, pass it as the first argument to `workflow`, and pass a concise human-readable workflow name as the second argument.
+- Export the workflow entrypoint as the module's default function. It must receive a `WorkflowRuntime` and a concise human-readable workflow name as a first parameter `{ runtime, name }`.
 - Use `workflow` and `promptStructured` from `utils.ts` when appropriate.
 - Use the progress reporter passed to the `workflow` callback to name each meaningful phase. Report semantic phases such as planning, parallel execution, and synthesis; worker sessions and tool activity are tracked automatically.
 - Use the raw `client.session` SDK API for unformatted prompts and other session operations.
@@ -47,8 +47,24 @@ Import the shared helpers from the correct relative path, typically `../utils.js
 
 ## Running
 
-Run workflows exclusively with the `run-workflow` tool. Pass the entrypoint path relative to `.opencode/workflows/runtime`, for example:
+Run workflows exclusively by launching the `workflow` subagent with the `task` tool. Do not call `run-workflow` directly from the primary agent.
+
+Pass the entrypoint path relative to `.opencode/workflows/runtime` in the task prompt. Use this exact task shape:
+
+```text
+description: <workflow-name> 🚀🚀🚀
+subagent_type: workflow
+prompt: Run workflow <relative-entrypoint-path>
+```
+
+For example, the prompt path may be:
 
 ```text
 code-review-a1b2c3d4/main.ts
+```
+
+And the name (defined in the workflow code entrypoint) may be:
+
+```text
+Three-Step Code Review
 ```
