@@ -27,8 +27,9 @@ Import the shared helpers from the correct relative path, typically `../utils.js
 ## Implementation
 
 - Orchestrate agents through the OpenCode SDK client provided by `workflow`; do not use another agent framework or SDK.
-- Export the workflow entrypoint as the module's default function.
+- Export the workflow entrypoint as the module's default function. It must accept a `WorkflowRuntime`, pass it as the first argument to `workflow`, and pass a concise human-readable workflow name as the second argument.
 - Use `workflow` and `promptStructured` from `utils.ts` when appropriate.
+- Use the progress reporter passed to the `workflow` callback to name each meaningful phase. Report semantic phases such as planning, parallel execution, and synthesis; worker sessions and tool activity are tracked automatically.
 - Use the raw `client.session` SDK API for unformatted prompts and other session operations.
 - Give independent agents separate child sessions.
 - Run unrelated steps concurrently whenever possible, typically with `Promise.all`. Keep dependent steps sequential.

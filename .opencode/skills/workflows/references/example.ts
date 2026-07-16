@@ -1,11 +1,12 @@
-import { promptStructured, workflow, text, z } from "./scripts/utils.js"
+import { promptStructured, workflow, text, z, type WorkflowRuntime } from "./scripts/utils.js"
 
 const Plan = z.object({
   tasks: z.array(z.string()),
 })
 
-export default () =>
-  workflow(async (client) => {
+export default (runtime: WorkflowRuntime) =>
+  workflow(runtime, "Parallel code review", async (client, progress) => {
+    progress.phase("Planning review tasks")
     const session = await client.session.create({
       model: {
         providerID: "openai",
@@ -20,6 +21,7 @@ export default () =>
       schema: Plan,
     })
 
+    progress.phase("Running parallel reviews")
     const reports = await Promise.all(
       plan.tasks.map(async (task) => {
         const worker = await client.session.create(
@@ -53,6 +55,7 @@ export default () =>
       }),
     )
 
+    progress.phase("Synthesizing findings")
     const response = await client.session.prompt(
       {
         sessionID: session.data.id,
