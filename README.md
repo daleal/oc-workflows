@@ -13,7 +13,7 @@ For manual installation, add the package to both files.
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugin": ["@daleal/opencode-workflows"]
+  "plugin": ["@daleal/opencode-workflows"],
 }
 ```
 
@@ -22,7 +22,7 @@ For manual installation, add the package to both files.
 ```jsonc
 {
   "$schema": "https://opencode.ai/tui.json",
-  "plugin": ["@daleal/opencode-workflows"]
+  "plugin": ["@daleal/opencode-workflows"],
 }
 ```
 

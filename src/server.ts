@@ -1,32 +1,32 @@
-import { fileURLToPath } from "node:url"
-import type { PluginModule } from "@opencode-ai/plugin"
-import runWorkflow from "./run-workflow.ts"
+import { fileURLToPath } from 'node:url';
+import type { PluginModule } from '@opencode-ai/plugin';
+import runWorkflow from './run-workflow.ts';
 
-const skillRoot = fileURLToPath(new URL("../skills", import.meta.url))
+const skillRoot = fileURLToPath(new URL('../skills', import.meta.url));
 
 type ConfigWithSkills = {
   skills?: {
-    paths?: string[]
-    urls?: string[]
-  }
-}
+    paths?: string[];
+    urls?: string[];
+  };
+};
 
 const plugin: PluginModule & { id: string } = {
-  id: "daleal.workflows",
+  id: 'daleal.workflows',
   server: async () => ({
     config(config) {
-      const configured = config as typeof config & ConfigWithSkills
-      const paths = configured.skills?.paths ?? []
+      const configured = config as typeof config & ConfigWithSkills;
+      const paths = configured.skills?.paths ?? [];
       configured.skills = {
         ...configured.skills,
         paths: paths.includes(skillRoot) ? paths : [...paths, skillRoot],
-      }
-      return Promise.resolve()
+      };
+      return Promise.resolve();
     },
     tool: {
-      "run-workflow": runWorkflow,
+      'run-workflow': runWorkflow,
     },
   }),
-}
+};
 
-export default plugin
+export default plugin;
