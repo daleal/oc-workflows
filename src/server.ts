@@ -22,6 +22,10 @@ const plugin: PluginModule & { id: string } = {
           ...configured.skills,
           paths: paths.includes(skillRoot) ? paths : [...paths, skillRoot],
         };
+        configured.permission = {
+          ...configured.permission,
+          'run-workflow': 'deny',
+        } as Record<string, 'allow' | 'ask' | 'deny'>;
         configured.agent = {
           ...configured.agent,
           workflow: {

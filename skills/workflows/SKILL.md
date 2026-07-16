@@ -47,7 +47,7 @@ Import the shared helpers from the correct relative path, typically `../utils.js
 
 ## Running
 
-Run workflows exclusively by launching the `workflow` subagent with the `task` tool. Do not call `run-workflow` directly from the primary agent.
+Run workflows exclusively by launching the `workflow` subagent with the `task` tool.
 
 Pass the entrypoint path relative to `.opencode/workflows/runtime` in the task prompt. Use this exact task shape:
 
