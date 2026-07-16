@@ -12,8 +12,7 @@
   ],
   "type": "module",
   "exports": {
-    "./server": "./src/server.ts",
-    "./tui": "./src/tui.tsx"
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -24,10 +23,7 @@
   "dependencies": {
     "@opencode-ai/plugin": "1.18.2",
     "@opencode-ai/sdk": "1.18.2",
-    "@opentui/keymap": "0.4.3",
-    "@opentui/solid": "0.4.3",
-    "effect": "4.0.0-beta.83",
-    "solid-js": "1.9.12"
+    "effect": "4.0.0-beta.83"
   },
   "devDependencies": {
     "@daleal/oxd-config-ts": "^0.1.0",

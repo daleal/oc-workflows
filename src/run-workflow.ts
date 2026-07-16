@@ -1,4 +1,4 @@
-import { mkdir, realpath, rename, rm, stat, writeFile } from 'node:fs/promises';
+import { realpath, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { inspect } from 'node:util';
@@ -10,12 +10,6 @@ type WorkflowProgress = {
   status: 'running' | 'completed';
   phase: string;
   [key: string]: unknown;
-};
-
-type WorkflowState = {
-  sessionID: string;
-  updatedAt: number;
-  progress: WorkflowProgress & { path: string };
 };
 
 const isWithin = (root: string, target: string) => {
@@ -59,10 +53,6 @@ const runWorkflow = (client: PluginInput['client']) =>
       const url = pathToFileURL(resolvedScript);
       url.searchParams.set('run', crypto.randomUUID());
 
-      const stateDirectory = path.resolve(context.directory, '.opencode/workflows/progress');
-      const stateFile = path.join(stateDirectory, `${context.sessionID}.json`);
-      await mkdir(stateDirectory, { recursive: true });
-      let writes = Promise.resolve();
       let updates = Promise.resolve();
       let recordedPhase: string | undefined;
       const update = async (next: WorkflowProgress & { path: string }) => {
@@ -87,23 +77,11 @@ const runWorkflow = (client: PluginInput['client']) =>
         });
         recordedPhase = next.phase;
       };
-      const persist = (next: WorkflowProgress & { path: string }) => {
+      const publish = (next: WorkflowProgress & { path: string }) => {
         updates = updates
           .catch(() => {})
           .then(() => update(next))
           .catch(() => {});
-        const state: WorkflowState = {
-          sessionID: context.sessionID,
-          updatedAt: Date.now(),
-          progress: next,
-        };
-        writes = writes
-          .catch(() => {})
-          .then(async () => {
-            const temporary = `${stateFile}.${crypto.randomUUID()}.tmp`;
-            await writeFile(temporary, JSON.stringify(state));
-            await rename(temporary, stateFile);
-          });
       };
 
       let progress: WorkflowProgress & { path: string } = {
@@ -116,7 +94,7 @@ const runWorkflow = (client: PluginInput['client']) =>
         total: 0,
         tasks: [],
       };
-      persist(progress);
+      publish(progress);
       try {
         const module = await import(url.href);
         const result =
@@ -125,13 +103,13 @@ const runWorkflow = (client: PluginInput['client']) =>
                 signal: context.abort,
                 report(next: WorkflowProgress) {
                   progress = { ...next, path: args.path };
-                  persist(progress);
+                  publish(progress);
                 },
               })
             : undefined;
 
         progress = { ...progress, status: 'completed' };
-        await Promise.all([writes, updates]);
+        await updates;
         return {
           title: `${progress.name ?? args.path} · ${progress.phase}`,
           output:
@@ -141,8 +119,7 @@ const runWorkflow = (client: PluginInput['client']) =>
           metadata: { workflow: progress },
         };
       } finally {
-        await Promise.all([writes.catch(() => {}), updates.catch(() => {})]);
-        await rm(stateFile, { force: true });
+        await updates.catch(() => {});
       }
     },
   });
