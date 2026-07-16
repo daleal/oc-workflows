@@ -148,7 +148,7 @@ function View(props: { api: TuiPluginApi; runs: () => Map<string, WorkflowState>
 
 const tui: TuiPlugin = async (api) => {
   const [runs, setRuns] = createSignal(new Map<string, WorkflowState>())
-  const directory = path.resolve(api.state.path.directory, ".opencode/workflow-progress")
+  const directory = path.resolve(api.state.path.directory, ".opencode/workflows/progress")
   let reading = false
   async function refresh() {
     if (reading) return

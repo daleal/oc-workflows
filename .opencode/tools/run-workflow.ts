@@ -23,24 +23,24 @@ function isWithin(root: string, target: string) {
 }
 
 export default tool({
-  description: "Run a TypeScript workflow from the project's .opencode/workflows directory. Used exclusively to run workflows generated with the guidance of the `workflows` skill",
+  description: "Run a TypeScript workflow from the project's .opencode/workflows/runtime directory. Used exclusively to run workflows generated with the guidance of the `workflows` skill",
   args: {
-    path: tool.schema.string().describe("Workflow path relative to .opencode/workflows"),
+    path: tool.schema.string().describe("Workflow path relative to .opencode/workflows/runtime"),
   },
   async execute(args, context) {
     if (path.isAbsolute(args.path) || path.extname(args.path) !== ".ts") {
       throw new Error("Workflow path must be a relative .ts file")
     }
 
-    const root = path.resolve(context.directory, ".opencode/workflows")
+    const root = path.resolve(context.directory, ".opencode/workflows/runtime")
     const script = path.resolve(root, args.path)
     if (!isWithin(root, script)) {
-      throw new Error("Workflow path must stay within .opencode/workflows")
+      throw new Error("Workflow path must stay within .opencode/workflows/runtime")
     }
 
     const [resolvedRoot, resolvedScript] = await Promise.all([realpath(root), realpath(script)])
     if (!isWithin(resolvedRoot, resolvedScript)) {
-      throw new Error("Workflow symlinks must stay within .opencode/workflows")
+      throw new Error("Workflow symlinks must stay within .opencode/workflows/runtime")
     }
     if (!(await stat(resolvedScript)).isFile()) {
       throw new Error("Workflow path must reference a file")
@@ -56,7 +56,7 @@ export default tool({
     const url = pathToFileURL(resolvedScript)
     url.searchParams.set("run", crypto.randomUUID())
 
-    const stateDirectory = path.resolve(context.directory, ".opencode/workflow-progress")
+    const stateDirectory = path.resolve(context.directory, ".opencode/workflows/progress")
     const stateFile = path.join(stateDirectory, `${context.sessionID}.json`)
     await mkdir(stateDirectory, { recursive: true })
     let writes = Promise.resolve()

@@ -17,7 +17,7 @@ Use OpenCode's TypeScript SDK to write workflows that coordinate multiple OpenCo
 Every workflow must live in its own named folder under `.opencode/workflows`. Write workflow files only at:
 
 ```text
-.opencode/workflows/<workflow-name>-<random-suffix>/**/*.ts
+.opencode/workflows/runtime/<workflow-name>-<random-suffix>/**/*.ts
 ```
 
 Append a fresh random suffix to every workflow folder name. Generate an 8-character hexadecimal suffix with:
@@ -26,9 +26,9 @@ Append a fresh random suffix to every workflow folder name. Generate an 8-charac
 openssl rand -hex 4
 ```
 
-For example, a `code-review` workflow with output `a1b2c3d4` must live under `.opencode/workflows/code-review-a1b2c3d4`. Generate the suffix once per workflow and use that same folder name everywhere, including imports and the `run-workflow` entrypoint path.
+For example, a `code-review` workflow with output `a1b2c3d4` must live under `.opencode/workflows/runtime/code-review-a1b2c3d4`. Generate the suffix once per workflow and use that same folder name everywhere, including imports and the `run-workflow` entrypoint path.
 
-Do not place workflow entrypoints directly in `.opencode/workflows`. The only TypeScript file allowed directly in that directory is the required shared `.opencode/workflows/utils.ts`.
+Do not place workflow entrypoints directly in `.opencode/workflows/runtime`. The only TypeScript file allowed directly in that directory is the required shared `.opencode/workflows/utils.ts`.
 
 Import the shared helpers from the correct relative path, typically `../utils.js` for an entrypoint directly inside its workflow folder.
 
@@ -46,7 +46,7 @@ Import the shared helpers from the correct relative path, typically `../utils.js
 
 ## Running
 
-Run workflows exclusively with the `run-workflow` tool. Pass the entrypoint path relative to `.opencode/workflows`, for example:
+Run workflows exclusively with the `run-workflow` tool. Pass the entrypoint path relative to `.opencode/workflows/runtime`, for example:
 
 ```text
 code-review-a1b2c3d4/main.ts
