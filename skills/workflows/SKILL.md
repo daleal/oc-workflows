@@ -10,7 +10,7 @@ Use OpenCode's TypeScript SDK to write workflows that coordinate multiple OpenCo
 ## Before Writing
 
 1. Read [example.ts](references/example.ts) completely and follow its OpenCode SDK, helper, session, and export conventions.
-2. Ensure `.opencode/.gitignore` exists and contains `workflows/` so generated workflow files are not committed.
+2. Ensure `.opencode/.gitignore` exists and contains `workflows/` so generated workflow files are not committed. If the `.opencode/.gitignore` didn't exist before, after creating it make sure it also gitignores itself.
 3. Ensure `.opencode/workflows/utils.ts` exists. If it does not, copy the contents of [scripts/utils.ts](references/scripts/utils.ts) there verbatim before writing the workflow.
 
 ## File Layout
