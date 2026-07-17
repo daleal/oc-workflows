@@ -5,7 +5,7 @@ const Plan = z.object({
 });
 
 export default (runtime: WorkflowRuntime) =>
-  workflow(runtime, 'Parallel code review', async (client, progress) => {
+  workflow({ runtime, name: 'Parallel code review' }, async (client, progress) => {
     progress.phase('Planning review tasks');
     const session = await client.session.create(
       {

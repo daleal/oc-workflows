@@ -31,7 +31,7 @@ For example, a `code-review` workflow with output `a1b2c3d4` must live under `.o
 
 Do not place workflow entrypoints directly in `.opencode/workflows/runtime`. The only TypeScript file allowed directly in that directory is the required shared `.opencode/workflows/utils.ts`.
 
-Import the shared helpers from the correct relative path, typically `../utils.js` for an entrypoint directly inside its workflow folder.
+Import the shared helpers from the correct relative path, typically `../../utils.js` for an entrypoint directly inside its workflow folder.
 
 ## Implementation
 

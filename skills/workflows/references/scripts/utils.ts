@@ -251,8 +251,7 @@ export const promptStructured = async <Schema extends z.ZodType>(
 };
 
 export const workflow = async <Result>(
-  runtime: WorkflowRuntime,
-  name: string,
+  { runtime, name }: { runtime: WorkflowRuntime; name: string },
   run: (client: OpencodeClient, progress: WorkflowReporter) => Promise<Result>,
   options: ServerOptions = { port: 0 },
 ): Promise<Result> => {
